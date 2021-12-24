@@ -53,8 +53,7 @@ class IdGeneratorServiceTest {
     @Mock
     TransactionHelper transactionHelper;
 
-    @BeforeEach
-    void beforeEach() {
+    void doBefore() {
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -70,7 +69,22 @@ class IdGeneratorServiceTest {
         when(generatorRepository.save(any(Generator.class)))
                 .thenAnswer(a -> a.getArgument(0, Generator.class));
 
-        final Generator generator = generatorService.createGenerator("Testing Name #1", 1L, 500L);
+        final Generator generator = generatorService.createGenerator(GENERATOR_OWNER, "Testing Name #1", 1L, 500L);
+
+        assertEquals("Testing Name #1", generator.getName());
+        assertEquals(1L, generator.getActualPosition());
+        assertEquals(1L, generator.getRangeInitial());
+        assertEquals(500L, generator.getRangeFinal());
+        assertEquals(GENERATOR_OWNER, generator.getOwner());
+    }
+
+    @Test
+    @DisplayName("Creates a generator with no owner info")
+    void createGeneratorNoOwnerInfo() {
+        when(generatorRepository.save(any(Generator.class)))
+                .thenAnswer(a -> a.getArgument(0, Generator.class));
+
+        final Generator generator = generatorService.createGenerator(null, "Testing Name #1", 1L, 500L);
 
         assertEquals("Testing Name #1", generator.getName());
         assertEquals(1L, generator.getActualPosition());
@@ -82,6 +96,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Number creation others Generator is forbidden")
     void nextDontWorkOnOthersGenerators() {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", OLD_LOCK_OWNER, GENERATOR_ID, 5000L, 2L, GENERATOR_ID, false));
 
@@ -91,6 +106,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Number creation on disabled Generator is forbidden")
     void nextDontWorkOnDisabledGenerators() {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 2L, GENERATOR_ID, false));
 
@@ -100,6 +116,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Number creation is forbidden if already reached the maximum")
     void nextDontWorkOnGeneratorsOverflow() {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 5001L, GENERATOR_ID, true));
 
@@ -109,6 +126,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Number creation in the simplest way - only generators")
     void nextFirstNumberNumberGen() {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 2L, GENERATOR_ID, true));
 
@@ -135,6 +153,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Number creation dealing with concurrency problem on changing 'Generator'")
     void nextFirstNumberConcurrencyProblem() {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 2L, GENERATOR_ID, true),
                         new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 10L, 10L, true));
@@ -165,6 +184,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Reusing locked number")
     void nextFirstNumberReusingLockedNumbers() {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 3, GENERATOR_ID, true));
 
@@ -193,6 +213,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Creating numbers having concurrency problems on everything")
     void nextFirstNumberReusingLockedNumbersCompltee() {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 3, GENERATOR_ID, true));
 
@@ -239,6 +260,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Frees a nonexistent lock")
     void freeLockNonnexistent() {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 3, GENERATOR_ID, true));
         when(generatedRepository.findById(any( GeneratedKey.class )))
@@ -250,6 +272,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Frees a lock")
     void freeLock() throws NotFoundException {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 3, GENERATOR_ID, true));
         when(generatedRepository.findById(any( GeneratedKey.class )))
@@ -270,6 +293,7 @@ class IdGeneratorServiceTest {
     @Test
     @DisplayName("Frees an unowned lock")
     void freeLockUnownedLock() throws NotFoundException {
+        doBefore();
         when(generatorRepository.getById(1L))
                 .thenReturn(new Generator(1L, "Testing", "609c1baa-08ff-4acf-b4c5-7873bc5b5ad4", 1L, 500L, 1L, 1L, true));
 
@@ -278,6 +302,7 @@ class IdGeneratorServiceTest {
 
     @Test
     void useConfirmNonnexistent() {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 3, GENERATOR_ID, true));
         when(generatedRepository.findById(any( GeneratedKey.class )))
@@ -288,6 +313,7 @@ class IdGeneratorServiceTest {
 
     @Test
     void useConfirmUnownedLock() {
+        doBefore();
         when(generatorRepository.getById(1L))
                 .thenReturn(new Generator(1L, "Testing", "609c1baa-08ff-4acf-b4c5-7873bc5b5ad4", 1L, 500L, 1L, 1L, true));
 
@@ -296,6 +322,7 @@ class IdGeneratorServiceTest {
 
     @Test
     void useConfirm() throws NotFoundException {
+        doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 3, GENERATOR_ID, true));
         when(generatedRepository.findById(any( GeneratedKey.class )))

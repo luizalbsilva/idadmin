@@ -6,7 +6,7 @@ import org.springframework.security.access.annotation.Secured;
 
 public interface IIdGeneratorService  {
     @Secured("ROLE_ADMIN")
-    Generator createGenerator(String name, long initialRange, long finalRange);
+    Generator createGenerator(String owner, String name, long initialRange, long finalRange);
 
     @Secured("ROLE_USER")
     long next(long generatorId, String lockTo);

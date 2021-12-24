@@ -42,15 +42,17 @@ public class IdGeneratorService implements IIdGeneratorService {
 
     @Override
     @Transactional
-    public Generator createGenerator(String name, long initialRange, long finalRange) {
+    public Generator createGenerator(String owner, String name, long initialRange, long finalRange) {
         Generator generator = new Generator();
         generator.setName(name);
         generator.setRangeInitial(initialRange);
         generator.setRangeFinal(finalRange);
         generator.setEnabled(true);
         generator.setActualPosition(initialRange);
-
-        generator.setOwner(getLoggedUser());
+        if (owner == null)
+            generator.setOwner(getLoggedUser());
+        else
+            generator.setOwner(owner);
         return generatorRepository.save(generator);
     }
 

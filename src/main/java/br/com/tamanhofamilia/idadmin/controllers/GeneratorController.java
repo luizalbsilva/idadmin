@@ -25,6 +25,7 @@ public class GeneratorController {
         return ResponseEntity.ok(
                 converter.convert(
                         service.createGenerator(
+                                body.getOwner(),
                                 body.getName(),
                                 body.getStart(),
                                 body.getEnd()
