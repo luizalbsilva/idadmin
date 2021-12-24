@@ -8,15 +8,15 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(schema = Generator.SEQUENCE, name = "id_generator")
+@Table(schema = Generator.SCHEMA, name = "id_generator")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SequenceGenerator(name = "SEQUENCE_IDGEN", schema = Generator.SEQUENCE ,
+@SequenceGenerator(name = "SEQUENCE_IDGEN", schema = Generator.SCHEMA,
         sequenceName = "GEN_IDGEN", allocationSize = 1)
 public class Generator {
-    public static final String SEQUENCE="idgenerator";
+    public static final String SCHEMA ="idgenerator";
     @Id
     @Column(name = "generator_id", columnDefinition = "bigint")
     @GeneratedValue(generator = "SEQUENCE_IDGEN")

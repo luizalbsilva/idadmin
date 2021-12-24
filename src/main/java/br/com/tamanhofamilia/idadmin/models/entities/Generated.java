@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(schema = Generator.SEQUENCE, name = "generated_numbers")
+@Table(schema = Generator.SCHEMA, name = "generated_numbers")
 @Data
 @Builder
 @NoArgsConstructor
