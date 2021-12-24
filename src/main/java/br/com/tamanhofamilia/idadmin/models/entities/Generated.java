@@ -1,6 +1,9 @@
 package br.com.tamanhofamilia.idadmin.models.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -8,6 +11,9 @@ import java.sql.Timestamp;
 @Entity
 @Table(schema = Generator.SEQUENCE, name = "generated_numbers")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Generated {
     @Id
     private GeneratedKey id;

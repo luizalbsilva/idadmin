@@ -1,5 +1,7 @@
 package br.com.tamanhofamilia.idadmin.models.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +11,8 @@ import javax.persistence.*;
 @Table(schema = Generator.SEQUENCE, name = "id_generator")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @SequenceGenerator(name = "SEQUENCE_IDGEN", schema = Generator.SEQUENCE ,
         sequenceName = "GEN_IDGEN", allocationSize = 1)
 public class Generator {
@@ -31,7 +35,7 @@ public class Generator {
     private Long rangeFinal;
 
     @Column(name = "actual", columnDefinition = "bigint", nullable = false)
-    private Long actualPosition;
+    private long actualPosition;
 
     @Version
     private Long version;

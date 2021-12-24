@@ -1,7 +1,6 @@
 package br.com.tamanhofamilia.idadmin.configuration;
 
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 public class WebConfig extends WebSecurityConfigurerAdapter {
     private Converter<Jwt, Collection<GrantedAuthority>> jwtConverter =
-            (source) -> ((List<String>) Optional.ofNullable((Map<String, Object>)source.getClaim("realm_access"))
+            source-> ((List<String>) Optional.ofNullable((Map<String, Object>)source.getClaim("realm_access"))
             .orElse(Collections.emptyMap())
             .get("roles"))
             .stream().map(n -> "ROLE_" + n)

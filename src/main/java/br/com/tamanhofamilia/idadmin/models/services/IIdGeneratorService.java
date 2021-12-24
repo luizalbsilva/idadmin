@@ -9,7 +9,7 @@ public interface IIdGeneratorService  {
     Generator createGenerator(String name, long initialRange, long finalRange);
 
     @Secured("ROLE_USER")
-    Long next(long generatorId);
+    long next(long generatorId, String lockTo);
 
     @Secured("ROLE_USER")
     void freeLock(long generatorId, long number) throws NotFoundException;
