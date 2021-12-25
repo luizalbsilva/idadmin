@@ -1,12 +1,10 @@
 package br.com.tamanhofamilia.idadmin.controllers;
 
-import br.com.tamanhofamilia.idadmin.controllers.dto.creategenerator.GeneratorRequestDto;
 import br.com.tamanhofamilia.idadmin.controllers.dto.creategenerator.GeneratorResponseDto;
 import br.com.tamanhofamilia.idadmin.controllers.dto.creategenerator.NextNumberRequestDto;
 import br.com.tamanhofamilia.idadmin.controllers.dto.creategenerator.NextNumberResponseDto;
 import br.com.tamanhofamilia.idadmin.models.entities.Generator;
 import br.com.tamanhofamilia.idadmin.models.exceptions.IdAdminException;
-import br.com.tamanhofamilia.idadmin.models.exceptions.NotFoundException;
 import br.com.tamanhofamilia.idadmin.models.services.IIdGeneratorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

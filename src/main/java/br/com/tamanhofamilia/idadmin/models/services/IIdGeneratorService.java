@@ -2,7 +2,6 @@ package br.com.tamanhofamilia.idadmin.models.services;
 
 import br.com.tamanhofamilia.idadmin.models.entities.Generator;
 import br.com.tamanhofamilia.idadmin.models.exceptions.IdAdminException;
-import br.com.tamanhofamilia.idadmin.models.exceptions.NotFoundException;
 import org.springframework.security.access.annotation.Secured;
 
 public interface IIdGeneratorService  {
