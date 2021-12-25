@@ -1,4 +1,4 @@
 package br.com.tamanhofamilia.idadmin.models.exceptions;
 
-public class NotFoundException extends IdAdminException {
+public class IdAdminException extends Exception {
 }

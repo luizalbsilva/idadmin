@@ -4,9 +4,7 @@ import br.com.tamanhofamilia.idadmin.models.entities.Generated;
 import br.com.tamanhofamilia.idadmin.models.entities.GeneratedKey;
 import br.com.tamanhofamilia.idadmin.models.entities.GeneratedStatus;
 import br.com.tamanhofamilia.idadmin.models.entities.Generator;
-import br.com.tamanhofamilia.idadmin.models.exceptions.DisabledGeneratorException;
-import br.com.tamanhofamilia.idadmin.models.exceptions.GeneratorOverflowException;
-import br.com.tamanhofamilia.idadmin.models.exceptions.NotFoundException;
+import br.com.tamanhofamilia.idadmin.models.exceptions.*;
 import br.com.tamanhofamilia.idadmin.models.repositories.GeneratedRepository;
 import br.com.tamanhofamilia.idadmin.models.repositories.GeneratorRepository;
 import org.hibernate.StaleObjectStateException;
@@ -271,7 +269,7 @@ class IdGeneratorServiceTest {
 
     @Test
     @DisplayName("Frees a lock")
-    void freeLock() throws NotFoundException {
+    void freeLock() throws IdAdminException {
         doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 3, GENERATOR_ID, true));
@@ -291,7 +289,24 @@ class IdGeneratorServiceTest {
     }
 
     @Test
-    @DisplayName("Frees an unowned lock")
+    @DisplayName("Tries to free a number of unlocked generator")
+    void freeLockOnUnLockedNumber() throws NotFoundException {
+        doBefore();
+        when(generatorRepository.getById(1L))
+                .thenReturn(new Generator(1L, "Testing", GENERATOR_OWNER, 1L, 500L, 1L, 1L, true));
+        when(generatedRepository.findById(any( GeneratedKey.class )))
+                .thenReturn(Optional.of(Generated.builder()
+                        .id(new GeneratedKey(1L, 3L))
+                        .externalId(LOCK_OWNER)
+                        .status(GeneratedStatus.UNDER_USE)
+                        .build()));
+
+        assertThrows(IncorrectStatusException.class, () -> generatorService.freeLock(1L, 3L));
+
+    }
+
+    @Test
+    @DisplayName("Tries to free a number of unowned generator")
     void freeLockUnownedLock() throws NotFoundException {
         doBefore();
         when(generatorRepository.getById(1L))
@@ -301,6 +316,7 @@ class IdGeneratorServiceTest {
     }
 
     @Test
+    @DisplayName("Behaviour expected if there is no such record when freeing a number")
     void useConfirmNonnexistent() {
         doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
@@ -312,6 +328,7 @@ class IdGeneratorServiceTest {
     }
 
     @Test
+    @DisplayName("Tries to confirm a number of unowned generator")
     void useConfirmUnownedLock() {
         doBefore();
         when(generatorRepository.getById(1L))
@@ -321,7 +338,24 @@ class IdGeneratorServiceTest {
     }
 
     @Test
-    void useConfirm() throws NotFoundException {
+    @DisplayName("Tries to confirm a number of unowned generator")
+    void useConfirmUnlockedNumber() {
+        doBefore();
+        when(generatorRepository.getById(1L))
+                .thenReturn(new Generator(1L, "Testing", GENERATOR_OWNER, 1L, 500L, 5L, 1L, true));
+        when(generatedRepository.findById(any( GeneratedKey.class )))
+                .thenReturn(Optional.of(Generated.builder()
+                        .id(new GeneratedKey(1L, 3L))
+                        .externalId(LOCK_OWNER)
+                        .status(GeneratedStatus.FREE)
+                        .build()));
+
+        assertThrows(IncorrectStatusException.class, () -> generatorService.useConfirm(1L, 3L) );
+    }
+
+    @Test
+    @DisplayName("Behaviour expected if there is no such record when confirming a number")
+    void useConfirm() throws IdAdminException {
         doBefore();
         when(generatorRepository.getById(GENERATOR_ID))
                 .thenReturn(new Generator(GENERATOR_ID, "Test Generator", GENERATOR_OWNER, GENERATOR_ID, 5000L, 3, GENERATOR_ID, true));

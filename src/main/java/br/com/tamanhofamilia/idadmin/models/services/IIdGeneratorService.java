@@ -1,6 +1,7 @@
 package br.com.tamanhofamilia.idadmin.models.services;
 
 import br.com.tamanhofamilia.idadmin.models.entities.Generator;
+import br.com.tamanhofamilia.idadmin.models.exceptions.IdAdminException;
 import br.com.tamanhofamilia.idadmin.models.exceptions.NotFoundException;
 import org.springframework.security.access.annotation.Secured;
 
@@ -12,8 +13,8 @@ public interface IIdGeneratorService  {
     long next(long generatorId, String lockTo);
 
     @Secured("ROLE_USER")
-    void freeLock(long generatorId, long number) throws NotFoundException;
+    void freeLock(long generatorId, long number) throws IdAdminException;
 
     @Secured("ROLE_USER")
-    void useConfirm(long generatorId, long number) throws NotFoundException;
+    void useConfirm(long generatorId, long number) throws IdAdminException;
 }

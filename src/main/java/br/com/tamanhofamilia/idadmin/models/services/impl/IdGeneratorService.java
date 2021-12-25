@@ -4,9 +4,7 @@ import br.com.tamanhofamilia.idadmin.models.entities.Generated;
 import br.com.tamanhofamilia.idadmin.models.entities.GeneratedKey;
 import br.com.tamanhofamilia.idadmin.models.entities.GeneratedStatus;
 import br.com.tamanhofamilia.idadmin.models.entities.Generator;
-import br.com.tamanhofamilia.idadmin.models.exceptions.DisabledGeneratorException;
-import br.com.tamanhofamilia.idadmin.models.exceptions.GeneratorOverflowException;
-import br.com.tamanhofamilia.idadmin.models.exceptions.NotFoundException;
+import br.com.tamanhofamilia.idadmin.models.exceptions.*;
 import br.com.tamanhofamilia.idadmin.models.repositories.GeneratedRepository;
 import br.com.tamanhofamilia.idadmin.models.repositories.GeneratorRepository;
 import br.com.tamanhofamilia.idadmin.models.services.IIdGeneratorService;
@@ -111,12 +109,13 @@ public class IdGeneratorService implements IIdGeneratorService {
     }
 
     @Override
-    public void freeLock(long generatorId, long number) throws NotFoundException {
+    public void freeLock(long generatorId, long number) throws IdAdminException {
         loadAndCheckGenerator(generatorId);
         final Optional<Generated> generatedOptional = generatedRepository.findById(new GeneratedKey(generatorId, number));
         if (! generatedOptional.isPresent()) throw new NotFoundException();
 
         final Generated generated = generatedOptional.get();
+        if (generated.getStatus() != GeneratedStatus.LOCKED) throw new IncorrectStatusException();
         generated.setStatus(GeneratedStatus.FREE);
         generated.setExternalId(null);
         generatedRepository.save(generated);
@@ -124,12 +123,13 @@ public class IdGeneratorService implements IIdGeneratorService {
     }
 
     @Override
-    public void useConfirm(long generatorId, long number) throws NotFoundException {
+    public void useConfirm(long generatorId, long number) throws IdAdminException {
         loadAndCheckGenerator(generatorId);
         final Optional<Generated> generatedOptional = generatedRepository.findById(new GeneratedKey(generatorId, number));
         if (! generatedOptional.isPresent()) throw new NotFoundException();
 
         final Generated generated = generatedOptional.get();
+        if (generated.getStatus() != GeneratedStatus.LOCKED) throw new IncorrectStatusException();
         generated.setStatus(GeneratedStatus.UNDER_USE);
         generated.setExternalId(null);
         generatedRepository.save(generated);

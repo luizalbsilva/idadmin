@@ -5,6 +5,7 @@ import br.com.tamanhofamilia.idadmin.controllers.dto.creategenerator.GeneratorRe
 import br.com.tamanhofamilia.idadmin.controllers.dto.creategenerator.NextNumberRequestDto;
 import br.com.tamanhofamilia.idadmin.controllers.dto.creategenerator.NextNumberResponseDto;
 import br.com.tamanhofamilia.idadmin.models.entities.Generator;
+import br.com.tamanhofamilia.idadmin.models.exceptions.IdAdminException;
 import br.com.tamanhofamilia.idadmin.models.exceptions.NotFoundException;
 import br.com.tamanhofamilia.idadmin.models.services.IIdGeneratorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,7 +41,7 @@ public class GeneratedController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void freeNumber(
             @Parameter(description =  "Generator identifier. You got this id during when you create your generator.") @PathVariable("id") long generatorId,
-            @Parameter(description =  "Generated number") @PathVariable("number") long generated ) throws NotFoundException {
+            @Parameter(description =  "Generated number") @PathVariable("number") long generated ) throws IdAdminException {
         service.freeLock(generatorId, generated);
     }
 
@@ -50,7 +51,7 @@ public class GeneratedController {
     public void confirmNumber(
             @Parameter(description =  "Generator identifier. You got this id during when you create your generator.") @PathVariable("id") long generatorId,
             @Parameter(description =  "Generated number") @PathVariable("number") long generated
-            ) throws NotFoundException {
+            ) throws IdAdminException {
         service.useConfirm(generatorId, generated);
     }
 }
