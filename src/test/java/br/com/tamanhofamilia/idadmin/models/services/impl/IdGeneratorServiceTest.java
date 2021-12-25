@@ -28,8 +28,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -371,7 +370,9 @@ class IdGeneratorServiceTest {
         final ArgumentCaptor<Generated> generatedCaptor = ArgumentCaptor.forClass(Generated.class);
         verify(generatedRepository).save(generatedCaptor.capture());
 
-        assertEquals(GeneratedStatus.UNDER_USE, generatedCaptor.getValue().getStatus());
+        final Generated generated = generatedCaptor.getValue();
+        assertEquals(GeneratedStatus.UNDER_USE, generated.getStatus(), "The status must be change to 'UNDER_USE'");
+        assertEquals(LOCK_OWNER, generated.getExternalId(), "External Id must remain the same");
 
     }
 }

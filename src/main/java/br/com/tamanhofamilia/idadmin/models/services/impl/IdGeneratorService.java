@@ -131,7 +131,6 @@ public class IdGeneratorService implements IIdGeneratorService {
         final Generated generated = generatedOptional.get();
         if (generated.getStatus() != GeneratedStatus.LOCKED) throw new IncorrectStatusException();
         generated.setStatus(GeneratedStatus.UNDER_USE);
-        generated.setExternalId(null);
         generatedRepository.save(generated);
     }
 }
